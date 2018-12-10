@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+  <context id="DB2Tables" targetRuntime="MyBatis3">
+  	<!-- 指定生成javaBean是否有注释 -->
+	<commentGenerator>
+		<property name="suppressAllComments" value="true" />
+	</commentGenerator>
+  	<!-- 配置数据库连接 -->
+    <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+        connectionURL="jdbc:mysql://localhost:3306/eshop"
+        userId="root"
+        password="1234">
+    </jdbcConnection>
+
+    <javaTypeResolver>
+      <property name="forceBigDecimals" value="false" />
+    </javaTypeResolver>
+	
+	<!-- 指定javaBean生成的位置 -->
+    <javaModelGenerator 
+    	targetPackage="com.hello.eshop.bean" 
+    	targetProject=".\src\main\java">
+      <property name="enableSubPackages" value="true" />
+      <property name="trimStrings" value="true" />
+    </javaModelGenerator>
+	
+	<!-- 指定sql映射文件的生成位置 -->
+    <sqlMapGenerator 
+    	targetPackage="mapper"  
+    	targetProject=".\src\main\resources">
+      <property name="enableSubPackages" value="true" />
+    </sqlMapGenerator>
+	
+	<!-- 指定dao接口生成的位置，mapper接口 -->
+    <javaClientGenerator type="XMLMAPPER" 
+    	targetPackage="com.hello.eshop.dao"  
+    	targetProject=".\src\main\java">
+      <property name="enableSubPackages" value="true" />
+    </javaClientGenerator>
+	
+	<!-- 指定每个表的生成策略 -->
+	
+	
+   	<!-- <table tableName="tb_admin" domainObjectName="Admin"></table>
+ 	<table tableName="tb_book" domainObjectName="Book">
+ 		<columnOverride column="market_price" javaType="Double"></columnOverride>
+ 	</table>
+ 	<table tableName="tb_category" domainObjectName="Category"></table>
+ 	<table tableName="tb_product" domainObjectName="Product">
+ 		<columnOverride column="shop_price" javaType="Double"></columnOverride>
+ 		<columnOverride column="discount" javaType="Double"></columnOverride>
+ 	</table> -->
+ 	
+ 	<table tableName="tb_order" domainObjectName="Order">
+ 		<columnOverride column="total" javaType="Double"></columnOverride>
+ 	</table>
+      <!--
+ 	<table tableName="tb_orderitem" domainObjectName="OrderItem">
+ 		<columnOverride column="price" javaType="Double"></columnOverride>
+ 		<columnOverride column="sub_total" javaType="Double"></columnOverride>
+ 	</table>
+ 	<table tableName="tb_user" domainObjectName="User"></table> -->
+
+  </context>
+</generatorConfiguration>

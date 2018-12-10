@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+	<!-- SpringMVC的配置文件，包含网站跳转逻辑的控制，配置 -->
+	<context:component-scan base-package="com.hello.eshop.controller" />
+	
+	<!-- 配置视图解析器，方便页面返回  --> 
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+	
+	<!-- 配置资源映射 -->
+	<mvc:resources location="/css/" mapping="/css/**"/>
+	<mvc:resources location="/js/" mapping="/js/**"/>
+	
+	<!-- 异常处理处理器-->
+	<bean class="com.hello.eshop.exception.GlobalExceptionResolver"/> 
+	
+	<!-- 上传图片配置实现类 -->
+    <!-- 上传图片的大小B   5M  5*1024*1024 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    	<property name="maxUploadSize" value="5000000"/>
+    	 <property name="defaultEncoding" value="UTF-8"/>
+    </bean> 
+	
+	<!-- 配置拦截器, 多个拦截器,顺序执行-->
+	 <mvc:interceptors>
+		<!-- 直接定义在mvc:interceptors根下面的Interceptor对所有请求都拦截，公共拦截器可以有多个 -->
+		<!-- 当设置多个拦截器时，先按顺序调用preHandle方法，然后逆序调用每个拦截器的postHandle和afterCompletion方法 --> 
+		<bean class="com.hello.eshop.interceptor.AutoLoginInterceptor"></bean>
+		<!-- 自定义的拦截器类:匹配的是url路径， 如果不配置或/**,将拦截所有的Controller -->  
+		<mvc:interceptor>
+			<mvc:mapping path="/order/**"/>
+			<!-- 定义在mvc:interceptor下面的表示是对特定的请求才进行拦截的 -->  
+			<bean class="com.hello.eshop.interceptor.LoginInterceptor"/>
+		</mvc:interceptor>
+		<!-- 后台系统拦截器,涉及数据的操作都拦截 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/admin/category/**"/>
+			<mvc:mapping path="/admin/product/**"/>
+			<mvc:mapping path="/admin/order/**"/>
+			<mvc:mapping path="/admin/search/**"/>
+			<mvc:mapping path="/admin/user/**"/>
+			<mvc:mapping path="/chart/**"/>
+			<bean class="com.hello.eshop.interceptor.AdminInterceptor"/>
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+	<!--配置转换器-->
+	<bean id="customConversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+		<property name="converters">
+			<set>
+				<bean class="com.hello.eshop.convert.DateConverter"/>
+			</set>
+		</property>
+	</bean>
+
+	<!-- 两个标准配置 -->
+	<!-- 将springmvc不能处理的请求交给tomcat -->
+	<mvc:default-servlet-handler/>
+	<!-- 两大组件升级：能支持springmvc更高级的一些功能，JSR303校验，快捷ajax...映射动态请求 -->
+	<mvc:annotation-driven conversion-service="customConversionService"/>
+
+</beans>

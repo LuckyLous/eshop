@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hello.eshop.dao.ItemMapper" >
+	<select id="getItemList" resultType="SearchItem">
+		SELECT p.id AS id,
+		prod_name AS prodName,
+		shop_price AS shopPrice,
+		image,
+		p.description AS description,
+		c.name AS cate_name,
+		author,
+		press
+		FROM tb_product p 
+		JOIN tb_category c ON p.cate_id = c.id
+		JOIN tb_book b ON p.id = b.id
+		WHERE
+			p.status = 1
+	</select>
+	<select id="getItemById" parameterType="Integer" resultType="SearchItem">
+		SELECT p.id AS id,
+		prod_name AS prodName,
+		shop_price AS shopPrice,
+		image,
+		p.description AS description,
+		c.name AS cate_name,
+		author,
+		press
+		FROM tb_product p 
+		JOIN tb_category c ON p.cate_id = c.id
+		JOIN tb_book b ON p.id = b.id
+		WHERE
+			p.status = 1
+		AND p.id=#{itemid}
+	</select>
+</mapper>

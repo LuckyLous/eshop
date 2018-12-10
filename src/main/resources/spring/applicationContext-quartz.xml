@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+
+	<!-- 支付订单job的配置 -->
+	<bean id="paymentOrderJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="paymentOrderJob" />
+		</property>
+		<property name="targetMethod">
+			<value>listenerOrder</value>
+		</property>
+	</bean>
+
+	<!-- 定义触发器 -->
+	<bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="paymentOrderJobDetail" />
+		<!-- 每半小时执行一次 -->
+		<property name="cronExpression" value="0 0/30 * * * ?" />
+	</bean>
+
+	<!--==================-->
+	<!-- 发货订单job的配置 -->
+	<bean id="shipOrderJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="shipOrderJob" />
+		</property>
+		<property name="targetMethod">
+			<value>autoFinishOrder</value>
+		</property>
+	</bean>
+	<!-- 定义触发器 -->
+	<bean id="shipTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="shipOrderJobDetail" />
+		<!-- 每天23:50执行一次 -->
+		<property name="cronExpression" value="0 50 23 * * ?" />
+	</bean>
+
+	<!-- 定义调度器 -->
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="cronTrigger" />
+				<ref bean="shipTrigger" />
+			</list>
+		</property>
+	</bean>
+
+</beans>
